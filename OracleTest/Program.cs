@@ -1,4 +1,5 @@
-﻿using Oracle.ManagedDataAccess.Client;
+﻿using System.Data.Common;
+using Oracle.ManagedDataAccess.Client;
 
 namespace OracleTest;
 
@@ -21,14 +22,22 @@ internal class Program
             Console.WriteLine();
 
             //Retrieve sample data
-            cmd.CommandText = "SELECT description, done FROM todoitem";
-            OracleDataReader reader = cmd.ExecuteReader();
+            cmd.CommandText = "SELECT * FROM algorithm";
+            var reader = cmd.ExecuteReader();
+            Dictionary<string, string> fields = new Dictionary<string, string>();
             while (reader.Read())
             {
-                if (reader.GetBoolean(1))
-                    Console.WriteLine(reader.GetString(0) + " is done.");
-                else
-                    Console.WriteLine(reader.GetString(0) + " is NOT done.");
+                var x = reader.FieldCount;
+                for (int index = 0; index < x; index++)
+                {
+                    fields[reader.GetName(index)] = reader.GetString(index);
+                }
+            }
+
+            Console.WriteLine("done");
+            foreach (KeyValuePair<string, string> kvp in fields)
+            {
+                Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
             }
 
             reader.Dispose();
